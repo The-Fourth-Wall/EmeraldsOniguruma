@@ -2,9 +2,6 @@
 #include "../../src/oniguruma/oniguruma.h"
 
 static int matcher(UChar *pattern, UChar *input_string) {
-  OnigEncoding encodings[1] = {ONIG_ENCODING_ASCII};
-  onig_initialize(encodings, 1);
-
   regex_t *regex;
   OnigErrorInfo error_info;
   int res = onig_new(
@@ -22,24 +19,28 @@ static int matcher(UChar *pattern, UChar *input_string) {
   res                = onig_search(
     regex, input_string, end, input_string, end, region, ONIG_OPTION_NONE
   );
-  if(res >= 0) {
-    return region->end[0];
-  } else {
-    return 0;
-  }
 
+  int output = res >= 0 ? region->end[0] : 0;
   onig_region_free(region, 1);
   onig_free(regex);
-  onig_end();
+  return output;
 }
 
 module(T_oniguruma, {
+  before({
+    OnigEncoding encodings[1] = {ONIG_ENCODING_ASCII};
+    onig_initialize(encodings, 1);
+  });
+
+  after({ onig_end(); });
+
   describe("#oniguruma", {
     it("matches newlines", {
       UChar *pattern          = (UChar *)"^\\n";
       UChar *input_string     = (UChar *)"\n";
       int end_index           = matcher(pattern, input_string);
       input_string[end_index] = '\0';
+      assert_that_int(end_index equals to 1);
       assert_that_charptr((char *)input_string equals to "\n");
     });
 
@@ -48,6 +49,7 @@ module(T_oniguruma, {
       UChar *input_string     = (UChar *)"   ";
       int end_index           = matcher(pattern, input_string);
       input_string[end_index] = '\0';
+      assert_that_int(end_index equals to 3);
       assert_that_charptr((char *)input_string equals to "   ");
     });
 
@@ -56,6 +58,7 @@ module(T_oniguruma, {
       UChar *input_string     = (UChar *)"42_42.42_42";
       int end_index           = matcher(pattern, input_string);
       input_string[end_index] = '\0';
+      assert_that_int(end_index equals to 11);
       assert_that_charptr((char *)input_string equals to "42_42.42_42");
     });
 
@@ -64,6 +67,7 @@ module(T_oniguruma, {
       UChar *input_string     = (UChar *)"0x1337beef";
       int end_index           = matcher(pattern, input_string);
       input_string[end_index] = '\0';
+      assert_that_int(end_index equals to 10);
       assert_that_charptr((char *)input_string equals to "0x1337beef");
     });
 
@@ -72,6 +76,7 @@ module(T_oniguruma, {
       UChar *input_string     = (UChar *)"$va_riable";
       int end_index           = matcher(pattern, input_string);
       input_string[end_index] = '\0';
+      assert_that_int(end_index equals to 10);
       assert_that_charptr((char *)input_string equals to "$va_riable");
     });
 
@@ -80,6 +85,7 @@ module(T_oniguruma, {
       UChar *input_string     = (UChar *)"><+-";
       int end_index           = matcher(pattern, input_string);
       input_string[end_index] = '\0';
+      assert_that_int(end_index equals to 4);
       assert_that_charptr((char *)input_string equals to "><+-");
     });
 
@@ -88,7 +94,7 @@ module(T_oniguruma, {
       UChar *input_string     = (UChar *)"[()]";
       int end_index           = matcher(pattern, input_string);
       input_string[end_index] = '\0';
-      printf("match at (%d-%d)\n", 0, end_index);
+      assert_that_int(end_index equals to 1);
       assert_that_charptr((char *)input_string equals to "[");
     });
 
@@ -97,6 +103,7 @@ module(T_oniguruma, {
       UChar *input_string     = (UChar *)"\"some random string\"";
       int end_index           = matcher(pattern, input_string);
       input_string[end_index] = '\0';
+      assert_that_int(end_index equals to 20);
       assert_that_charptr((char *)input_string equals to
                           "\"some random string\"");
     });
