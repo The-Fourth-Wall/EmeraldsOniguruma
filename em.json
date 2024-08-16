@@ -14,10 +14,10 @@
   "compile-flags": {
     "cc": "clang",
     "debug": {
-      "opt": "-Og -g",
+      "opt": "-Og",
       "version": "-std=c89",
-      "flags": "-Wall -Wextra -Werror -pedantic -pedantic-errors -Wpedantic",
-      "warnings": ""
+      "flags": "-g -fsanitize=address",
+      "warnings": "-Wall -Wextra -Werror -pedantic -pedantic-errors -Wpedantic"
     },
     "release": {
       "opt": "-O2",
@@ -26,9 +26,9 @@
       "warnings": ""
     },
     "test": {
-      "opt": "-Og -g",
+      "opt": "-Og",
       "version": "-std=c89",
-      "flags": "",
+      "flags": "-g -fsanitize=address",
       "warnings": ""
     }
   },
