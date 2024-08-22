@@ -753,7 +753,7 @@ typedef enum {
   ONIG_CALLOUT_TYPE_SINGLE              = 0,
   ONIG_CALLOUT_TYPE_START_CALL          = 1,
   ONIG_CALLOUT_TYPE_BOTH_CALL           = 2,
-  ONIG_CALLOUT_TYPE_START_MARK_END_CALL = 3,
+  ONIG_CALLOUT_TYPE_START_MARK_END_CALL = 3
 } OnigCalloutType;
 
 
@@ -780,7 +780,7 @@ typedef enum {
   ONIG_TYPE_CHAR     = 1<<1,
   ONIG_TYPE_STRING   = 1<<2,
   ONIG_TYPE_POINTER  = 1<<3,
-  ONIG_TYPE_TAG      = 1<<4,
+  ONIG_TYPE_TAG      = 1<<4
 } OnigType;
 
 typedef union {
